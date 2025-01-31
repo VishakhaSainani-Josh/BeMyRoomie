@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS listings;
+DROP TABLE IF EXISTS interests;
+
