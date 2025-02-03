@@ -2,34 +2,30 @@ package repo
 
 import (
 	"database/sql"
-	"fmt"
-	"log"
+	"errors"
 
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/config"
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
 )
 
-var DB *sql.DB
-
-func ConnectDB() {
+func ConnectDB() (*sql.DB, error) {
 	config.Load()
 
 	dbURL := viper.GetString("POSTGRESQL_URL")
 	if dbURL == "" {
-		log.Fatal("POSTGRESQL_URL not found")
+		return nil, errors.New("POSTGRESQL_URL not found")
 	}
 
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
-		log.Fatalf("Error connecting to database: %s", err)
+		return nil, err
 	}
 
 	err = db.Ping()
 	if err != nil {
-		log.Fatalf("Database connection failed: %s", err)
+		return nil, err
 	}
 
-	fmt.Println("Connected to Database")
-	DB = db
+	return db, nil
 }

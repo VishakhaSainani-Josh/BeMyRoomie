@@ -2,34 +2,38 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
+	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/app"
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/config"
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/repo"
 	"github.com/spf13/viper"
 )
 
 func main() {
+	err := config.Load()
+	if err != nil {
+		log.Fatalf("error loading config file %s", err.Error())
+	}
 
-	config.Load()
-	repo.ConnectDB()
+	db, err := repo.ConnectDB()
+	if err != nil {
+		log.Fatalf("Database connection failed: %s", err)
+	}
 
-	router := http.NewServeMux()
+	services := app.InitServices(db)
+
+	router := app.InitRouter(services)
 
 	httpPort := viper.GetString("HTTP_PORT")
 	server := &http.Server{
 		Addr:    httpPort,
 		Handler: router,
 	}
-
-	router.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Server working"))
-	})
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt)
@@ -41,13 +45,12 @@ func main() {
 		}
 	}()
 	<-done
-	fmt.Println("Shutting down server")
+	log.Println("Shutting down server")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		fmt.Println("Server shutdown failed")
+		log.Println("Server shutdown failed")
 	}
-
 }
