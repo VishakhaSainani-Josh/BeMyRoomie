@@ -1,11 +1,14 @@
 package users
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/models"
+	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/pkg/constant"
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/pkg/errhandler"
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/pkg/jwt"
 
@@ -23,6 +26,7 @@ const (
 type Service interface {
 	RegisterUser(user models.User, role string) (int, error)
 	LoginUser(email, password string) (string, error)
+	AddPreferences(ctx context.Context, tags []string, city string) error
 }
 
 type service struct {
@@ -30,6 +34,7 @@ type service struct {
 }
 
 func NewService(userRepo repo.UserRepo) Service {
+	
 	return &service{userRepo: userRepo}
 }
 
@@ -77,7 +82,7 @@ func (s *service) LoginUser(email, password string) (string, error) {
 		}
 	}
 
-	token, err := jwt.GenerateJWT(user.Email)
+	token, err := jwt.GenerateJWT(user.UserId, user.Role)
 	if err != nil {
 		return "", errhandler.CustomError{
 			Message:    tokenErr,
@@ -86,4 +91,18 @@ func (s *service) LoginUser(email, password string) (string, error) {
 	}
 
 	return token, nil
+}
+
+func (s *service) AddPreferences(ctx context.Context, tags []string, city string) error {
+	userId := ctx.Value(constant.UserIdKey)
+	err := s.userRepo.AddPreferences(userId.(int), tags, city)
+	fmt.Println(err)
+	if err != nil {
+		return errhandler.CustomError{
+			Message:    "update failed",
+			StatusCode: http.StatusUnprocessableEntity,
+		}
+	}
+	return nil
+
 }

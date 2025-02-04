@@ -10,13 +10,15 @@ import (
 var jwtSecret = []byte(viper.GetString("JWT_SECRET_KEY"))
 
 type Claims struct {
-	Username string `json:"username"`
+	UserId int 
+	Role string 
 	jwt.RegisteredClaims
 }
 
-func GenerateJWT(username string) (string, error) {
+func GenerateJWT(userId int,role string) (string, error) {
 	claims := Claims{
-		Username: username,
+		UserId: userId,
+		Role : role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			Issuer:    "BeMyRoomie",
@@ -46,3 +48,6 @@ func ParseJWT(tokenStr string) (*Claims, error) {
 
 	}
 }
+
+
+

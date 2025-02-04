@@ -3,6 +3,7 @@ package app
 import (
 	"net/http"
 
+	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/pkg/middleware"
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/pkg/response"
 )
 
@@ -18,6 +19,9 @@ func InitRouter(deps dependencies) *http.ServeMux {
 	router.HandleFunc("POST /lister/signup", UserRegister(deps.userService))
 
 	router.HandleFunc("POST /signin", LoginUser(deps.userService))
+
+	//Protected routes
+	router.HandleFunc("POST /preferences", middleware.Middleware(AddPreferences(deps.userService)))
 
 	return router
 }
