@@ -85,3 +85,33 @@ func LoginUser(userService users.Service) func(w http.ResponseWriter, r *http.Re
 		response.HandleResponse(w, http.StatusOK, resp)
 	}
 }
+
+func AddPreferences(userService users.Service) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			response.HandleResponse(w, http.StatusInternalServerError, bodyError)
+			return
+		}
+
+		var preferences struct {
+			Tags []string `json:"tags"`
+			City string   `json:"city"`
+		}
+
+		err = json.Unmarshal(body, &preferences)
+		if err != nil {
+			response.HandleResponse(w, http.StatusBadRequest, invalidReq)
+			return
+		}
+
+		err = userService.AddPreferences(r.Context(), preferences.Tags, preferences.City)
+		if err != nil {
+			statusCode, errMessage := errhandler.MapError(err)
+			response.HandleResponse(w, statusCode, errMessage)
+			return
+		}
+
+		response.HandleResponse(w, http.StatusOK, "Preferences Updated Successfully")
+	}
+}
