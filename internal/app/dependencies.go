@@ -11,6 +11,7 @@ type dependencies struct {
 	userService users.Service
 }
 
+//Start services
 func InitServices(db *sql.DB) dependencies {
 	userRepo := repo.NewUserRepo(db)
 

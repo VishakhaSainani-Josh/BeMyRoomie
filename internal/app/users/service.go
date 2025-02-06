@@ -1,7 +1,7 @@
 package users
 
 import (
-	"net/http"
+	"context"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -12,17 +12,10 @@ import (
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/repo"
 )
 
-const (
-	userExist   = "email already registered"
-	userInvalid = "invalid crredentials"
-	userMissing = "user doesn't exist"
-	hashError   = "password hashing error"
-	tokenErr    = "could not generate token"
-)
-
 type Service interface {
-	RegisterUser(user models.User, role string) (int, error)
-	LoginUser(email, password string) (string, error)
+	RegisterUser(ctx context.Context, user models.NewUserRequest, role string) (int, error)
+	LoginUser(ctx context.Context, loginRequest models.LoginRequest) (string, error)
+	AddPreferences(ctx context.Context, preferences models.NewPreferenceRequest) error
 }
 
 type service struct {
@@ -33,57 +26,53 @@ func NewService(userRepo repo.UserRepo) Service {
 	return &service{userRepo: userRepo}
 }
 
-func (s *service) RegisterUser(user models.User, role string) (int, error) {
-	_, err := s.userRepo.GetUserByEmail(user.Email)
+// Registers the User. First it checks whether user is already registered if not then it hashes the password and calls db layer to register the user
+func (s *service) RegisterUser(ctx context.Context, user models.NewUserRequest, role string) (int, error) {
+	_, err := s.userRepo.GetUserByEmail(ctx, user.Email)
 	if err == nil {
-		return 0, errhandler.CustomError{
-			Message:    userExist,
-			StatusCode: http.StatusConflict,
-		}
+		return 0, errhandler.ErrUserExist
 	}
 
 	bytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
 	if err != nil {
-		return 0, errhandler.CustomError{
-			Message:    hashError,
-			StatusCode: http.StatusInternalServerError,
-		}
+		return 0, errhandler.ErrHash
 	}
 	user.Password = string(bytes)
 
 	user.Role = role
 
-	userId, err := s.userRepo.RegisterUser(user)
+	userId, err := s.userRepo.RegisterUser(ctx, user)
 	if err != nil {
 		return 0, err
 	}
 	return userId, nil
 }
 
-func (s *service) LoginUser(email, password string) (string, error) {
-	user, err := s.userRepo.GetUserByEmail(email)
+// Allows user to Signin. First it checks whether user is already registered, if yes then it compares the provided password with users registered password. It generates a JWT token for users session and returns it.
+func (s *service) LoginUser(ctx context.Context, loginRequest models.LoginRequest) (string, error) {
+	user, err := s.userRepo.GetUserByEmail(ctx, loginRequest.Email)
 	if err != nil {
-		return "", errhandler.CustomError{
-			Message:    userMissing,
-			StatusCode: http.StatusNotFound,
-		}
+		return "", errhandler.ErrUserMissing
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
-		return "", errhandler.CustomError{
-			Message:    userInvalid,
-			StatusCode: http.StatusUnauthorized,
-		}
+		return "", errhandler.ErrUserInvalid
 	}
 
-	token, err := jwt.GenerateJWT(user.Email)
+	token, err := jwt.GenerateJWT(user.UserId,user.Role)
 	if err != nil {
-		return "", errhandler.CustomError{
-			Message:    tokenErr,
-			StatusCode: http.StatusInternalServerError,
-		}
+		return "", errhandler.ErrToken
 	}
 
 	return token, nil
+}
+
+// Adds user preferences. Calls db layer to add preferences.
+func (s *service) AddPreferences(ctx context.Context, preferences models.NewPreferenceRequest) error {
+	err := s.userRepo.AddPreferences(ctx, preferences)
+	if err != nil {
+		return errhandler.ErrHash
+	}
+	return nil
 }

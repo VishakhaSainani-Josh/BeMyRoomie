@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Databse Connection
 func ConnectDB() (*sql.DB, error) {
 	config.Load()
 

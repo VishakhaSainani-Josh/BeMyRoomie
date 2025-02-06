@@ -3,15 +3,18 @@ module github.com/VishakhaSainani-Josh/BeMyRoomie
 go 1.23.4
 
 require (
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
+	github.com/golang-jwt/jwt/v4 v4.5.1
 	github.com/lib/pq v1.10.9
 	github.com/spf13/viper v1.19.0
+	golang.org/x/crypto v0.32.0
 )
 
 replace github.com/VishakhaSainani-Josh/BeMyRoomie/internal/app => /internal/app
 
 require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
-	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect
+	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
@@ -26,7 +29,6 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
-	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
