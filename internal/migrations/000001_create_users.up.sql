@@ -1,17 +1,17 @@
 CREATE TABLE "users"(
-    "user_id" BIGINT NOT NULL,
+    "user_id" SERIAL,
     "name" VARCHAR(255) NOT NULL,
     "phone" VARCHAR(255) NOT NULL,
     "email" VARCHAR(255) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
     "gender" VARCHAR(255) CHECK
         ("gender" IN('Male', 'Female')) NOT NULL,
-        "city" VARCHAR(255) NOT NULL,
+        "city" VARCHAR(255) DEFAULT '',
         "role" VARCHAR(255)
     CHECK
         ("role" IN('finder', 'lister')) NOT NULL,
-        "required_vacancy" BIGINT NOT NULL,
-        "tags" JSON NOT NULL,
+        "required_vacancy" BIGINT DEFAULT 0,
+        "tags" JSON DEFAULT '[]',
         "created_at" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
         "updated_at" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL
 );
