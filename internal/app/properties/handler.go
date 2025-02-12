@@ -93,6 +93,7 @@ func GetAllProperties(propertyService Service) func(w http.ResponseWriter, r *ht
 			response.HandleResponse(w, http.StatusInternalServerError, errhandler.ErrInternalServer.Error())
 			return
 		}
+		
 		var properties []models.Property
 		var err error
 		if owner == "true" {

@@ -22,8 +22,8 @@ func InitRouter(deps dependencies) *http.ServeMux {
 
 	//Protected routes
 	router.HandleFunc("POST /preferences", middleware.Authentication(users.AddPreferences(deps.userService)))
-	router.HandleFunc("POST /property", middleware.Authentication(middleware.Authorization(properties.RegisterProperty(deps.propertyService))))
-	router.HandleFunc("PATCH /properties/{property_id}", middleware.Authentication(middleware.Authorization(properties.UpdateProperty(deps.propertyService))))
+	router.HandleFunc("POST /property", middleware.Authentication(middleware.AuthorizeLister(properties.RegisterProperty(deps.propertyService))))
+	router.HandleFunc("PATCH /properties/{property_id}", middleware.Authentication(middleware.AuthorizeLister(properties.UpdateProperty(deps.propertyService))))
 	router.HandleFunc("GET /properties", middleware.Authentication(properties.GetAllProperties(deps.propertyService)))
 	router.HandleFunc("GET /properties/{property_id}", middleware.Authentication(properties.GetParticularProperties(deps.propertyService)))
 

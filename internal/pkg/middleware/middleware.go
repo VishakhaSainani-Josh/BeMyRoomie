@@ -38,11 +38,34 @@ func Authentication(next http.HandlerFunc) http.HandlerFunc {
 }
 
 // Checks whether the user is authorized to perform an action, if role of user is lister then it allows property methods
-func Authorization(next http.HandlerFunc) http.HandlerFunc {
+func AuthorizeLister(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		role := ctx.Value(constant.RoleKey).(string)
+		role, ok := ctx.Value(constant.RoleKey).(string)
+		if !ok {
+			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrInternalServer)
+			return
+		}
+
 		if role != "lister" {
+			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrAuth)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func AuthorizeFinder(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		role, ok := ctx.Value(constant.RoleKey).(string)
+		if !ok {
+			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrInternalServer)
+			return
+		}
+
+		if role != "finder" {
 			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrAuth)
 			return
 		}

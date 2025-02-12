@@ -72,6 +72,7 @@ func (r *userRepo) AddPreferences(ctx context.Context, preference models.NewPref
 	if !ok {
 		return errors.New("invalid or missing user ID in context")
 	}
+	
 	userTags, err := json.Marshal(preference.Tags)
 	if err != nil {
 		return err

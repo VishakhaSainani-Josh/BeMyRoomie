@@ -57,7 +57,10 @@ func NewPropertyRepo(db *sql.DB) PropertyRepo {
 // Registers Property details in database
 func (r *propertyRepo) RegisterProperty(ctx context.Context, property models.NewPropertyRequest) (int, error) {
 	var propertyId int
-	listerId := ctx.Value(constant.UserIdKey).(int)
+	listerId, ok := ctx.Value(constant.UserIdKey).(int)
+	if !ok {
+		return 0, errhandler.ErrInternalServer
+	}
 
 	propertyFacilities, err := json.Marshal(property.Facilities)
 	if err != nil {
@@ -183,7 +186,11 @@ func (r *propertyRepo) UpdateProperty(ctx context.Context, property models.Prope
 
 // It checks whether a lister has access to update a property
 func (r *propertyRepo) CheckPropertyAccess(ctx context.Context, propertyId int) error {
-	listerId := ctx.Value(constant.UserIdKey).(int)
+	listerId, ok := ctx.Value(constant.UserIdKey).(int)
+	if !ok {
+		return errhandler.ErrInternalServer
+	}
+
 	count := 0
 	err := r.DB.QueryRowContext(ctx, propertyAccessQuery, propertyId, listerId).Scan(&count)
 	if count == 0 {
@@ -237,7 +244,11 @@ func (r *propertyRepo) GetAllProperties(ctx context.Context) ([]models.Property,
 
 // Get all properties posted by the lister
 func (r *propertyRepo) GetUsersProperties(ctx context.Context) ([]models.Property, error) {
-	listerId := ctx.Value(constant.UserIdKey).(int)
+	listerId, ok := ctx.Value(constant.UserIdKey).(int)
+	if !ok {
+		return nil, errhandler.ErrInternalServer
+	}
+	
 	rows, err := r.DB.QueryContext(ctx, usersPropertiesQuery, listerId)
 	if err != nil {
 		return nil, err
