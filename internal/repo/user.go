@@ -15,8 +15,10 @@ const (
 	registerUserQuery = `INSERT INTO users (name, phone, email, password, gender,role, required_vacancy,created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5, $6, $7,$8,$9)
 	RETURNING user_id`
-	selectQuery = `SELECT user_id, name, phone, email, password, gender,city,role,required_vacancy,tags FROM users WHERE email = $1`
-	updateQuery = `UPDATE users SET tags=$1,city=$2 where user_id=$3`
+	selectQuery = `SELECT user_id, name, phone, email, password, gender,city,role,required_vacancy,tags FROM users 
+	WHERE email = $1`
+	updateQuery = `UPDATE users SET tags=$1,city=$2 
+	where user_id=$3`
 )
 
 type userRepo struct {
@@ -70,6 +72,7 @@ func (r *userRepo) AddPreferences(ctx context.Context, preference models.NewPref
 	if !ok {
 		return errors.New("invalid or missing user ID in context")
 	}
+	
 	userTags, err := json.Marshal(preference.Tags)
 	if err != nil {
 		return err
