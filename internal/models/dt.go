@@ -42,3 +42,38 @@ type User struct {
 	RequiredVacancy int      `db:"required_vacancy" json:"required_vacancy"`
 	Tags            []string `db:"tags" json:"tags"`
 }
+
+type Property struct {
+	PropertyId      int      `json:"property_id"`
+	ListerId        int      `json:"lister_id"`
+	Title           string   `json:"title"`
+	Description     string   `json:"description"`
+	City            string   `json:"city"`
+	Address         string   `json:"address"`
+	Rent            int64    `json:"rent"`
+	Facilities      []string `json:"facilities"`
+	Images          []string `json:"images"`
+	PreferredGender string   `json:"preferred_gender"`
+	Status          string   `json:"status"`
+	Vacancy         int      `json:"vacancy"`
+}
+
+type NewPropertyRequest struct {
+	PropertyId      int      `json:"property_id"`
+	ListerId        int      `json:"lister_id"`
+	Title           string   `json:"title"`
+	Description     string   `json:"description"`
+	City            string   `json:"city"`
+	Address         string   `json:"address"`
+	Rent            int64    `json:"rent"`
+	Facilities      []string `json:"facilities"`
+	Images          []string `json:"images"`
+	PreferredGender string   `json:"preferred_gender"`
+	Status          string   `json:"status"`
+	Vacancy         int      `json:"vacancy"`
+}
+
+type PropertyResponse struct {
+	PropertyId int    `json:"propertyId"`
+	Message    string `json:"message"`
+}
