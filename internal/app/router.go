@@ -3,6 +3,7 @@ package app
 import (
 	"net/http"
 
+	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/app/interests"
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/app/properties"
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/app/users"
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/pkg/middleware"
@@ -22,10 +23,18 @@ func InitRouter(deps dependencies) *http.ServeMux {
 
 	//Protected routes
 	router.HandleFunc("POST /preferences", middleware.Authentication(users.AddPreferences(deps.userService)))
+	router.HandleFunc("GET /profile", middleware.Authentication(users.ViewProfile(deps.userService)))
+	router.HandleFunc("PATCH /profile", middleware.Authentication(users.UpdateProfile(deps.userService)))
 	router.HandleFunc("POST /property", middleware.Authentication(middleware.AuthorizeLister(properties.RegisterProperty(deps.propertyService))))
 	router.HandleFunc("PATCH /properties/{property_id}", middleware.Authentication(middleware.AuthorizeLister(properties.UpdateProperty(deps.propertyService))))
 	router.HandleFunc("GET /properties", middleware.Authentication(properties.GetAllProperties(deps.propertyService)))
 	router.HandleFunc("GET /properties/{property_id}", middleware.Authentication(properties.GetParticularProperties(deps.propertyService)))
 
+	router.HandleFunc("POST /interest/{property_id}", middleware.Authentication(middleware.AuthorizeFinder(interests.ShowInterest(deps.interestService))))
+	router.HandleFunc("GET /interests/properties", middleware.Authentication(middleware.AuthorizeFinder(interests.GetInterestedProperties(deps.interestService))))
+	router.HandleFunc("DELETE /interests/properties/{property_id}", middleware.Authentication(middleware.AuthorizeFinder(interests.RemoveInterest(deps.interestService))))
+
+	router.HandleFunc("GET /interests/properties/{property_id}", middleware.Authentication(middleware.AuthorizeLister(interests.GetInterestedUsers(deps.interestService))))
+	router.HandleFunc("PATCH /interests/properties/{property_id}/{user_id}", middleware.Authentication(middleware.AuthorizeLister(interests.AcceptInterest(deps.interestService))))
 	return router
 }

@@ -11,6 +11,7 @@ import (
 	constant "github.com/VishakhaSainani-Josh/BeMyRoomie/internal/pkg/constants"
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/pkg/errhandler"
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/pkg/response"
+	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/pkg/validations"
 )
 
 // Reads property details and calls register property service to allow a lister to post a property
@@ -26,6 +27,13 @@ func RegisterProperty(propertyService Service) func(w http.ResponseWriter, r *ht
 
 		var property models.NewPropertyRequest
 		err = json.Unmarshal(body, &property)
+		if err != nil {
+			statusCode, errMessage := errhandler.MapError(err)
+			response.HandleResponse(w, statusCode, errMessage)
+			return
+		}
+
+		err = validations.ValidateRegisterPropertyStruct(property)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
 			response.HandleResponse(w, statusCode, errMessage)
@@ -72,6 +80,13 @@ func UpdateProperty(propertyService Service) func(w http.ResponseWriter, r *http
 			return
 		}
 
+		err = validations.ValidateUpdatePropertyStruct(property)
+		if err != nil {
+			statusCode, errMessage := errhandler.MapError(err)
+			response.HandleResponse(w, statusCode, errMessage)
+			return
+		}
+
 		err = propertyService.UpdateProperty(ctx, property, propertyId)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
@@ -93,7 +108,7 @@ func GetAllProperties(propertyService Service) func(w http.ResponseWriter, r *ht
 			response.HandleResponse(w, http.StatusInternalServerError, errhandler.ErrInternalServer.Error())
 			return
 		}
-		
+
 		var properties []models.Property
 		var err error
 		if owner == "true" {

@@ -42,7 +42,7 @@ CREATE TABLE "properties"(
 );
 ALTER TABLE
     "properties" ADD PRIMARY KEY("property_id");
-CREATE TABLE "interested"(
+CREATE TABLE "interests"(
     "user_id" BIGINT NOT NULL,
     "property_id" BIGINT NOT NULL,
     "is_accepted" BOOLEAN NOT NULL,
@@ -50,10 +50,10 @@ CREATE TABLE "interested"(
     "updated_at" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL
 );
 ALTER TABLE
-    "interested" ADD PRIMARY KEY("user_id");
+    "interests" ADD PRIMARY KEY("user_id","property_id");
 ALTER TABLE
     "properties" ADD CONSTRAINT "propertys_lister_id_foreign" FOREIGN KEY("lister_id") REFERENCES "users"("user_id");
 ALTER TABLE
-    "interested" ADD CONSTRAINT "interested_user_id_foreign" FOREIGN KEY("user_id") REFERENCES "users"("user_id");
+    "interests" ADD CONSTRAINT "interests_user_id_foreign" FOREIGN KEY("user_id") REFERENCES "users"("user_id");
 ALTER TABLE
-    "interested" ADD CONSTRAINT "interested_property_id_foreign" FOREIGN KEY("property_id") REFERENCES "properties"("property_id");
+    "interests" ADD CONSTRAINT "interests_property_id_foreign" FOREIGN KEY("property_id") REFERENCES "properties"("property_id");
