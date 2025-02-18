@@ -16,6 +16,8 @@ type Service interface {
 	RegisterUser(ctx context.Context, user models.NewUserRequest, role string) (int, error)
 	LoginUser(ctx context.Context, loginRequest models.LoginRequest) (string, error)
 	AddPreferences(ctx context.Context, preferences models.NewPreferenceRequest) error
+	ViewProfile(ctx context.Context) (models.User, error)
+	UpdateProfile(ctx context.Context, user models.User) error
 }
 
 type service struct {
@@ -60,7 +62,7 @@ func (s *service) LoginUser(ctx context.Context, loginRequest models.LoginReques
 		return "", errhandler.ErrUserInvalid
 	}
 
-	token, err := jwt.GenerateJWT(user.UserId,user.Role)
+	token, err := jwt.GenerateJWT(user.UserId, user.Role)
 	if err != nil {
 		return "", errhandler.ErrToken
 	}
@@ -73,6 +75,22 @@ func (s *service) AddPreferences(ctx context.Context, preferences models.NewPref
 	err := s.userRepo.AddPreferences(ctx, preferences)
 	if err != nil {
 		return errhandler.ErrHash
+	}
+	return nil
+}
+
+func (s *service) ViewProfile(ctx context.Context) (models.User, error) {
+	user, err := s.userRepo.ViewProfile(ctx)
+	if err != nil {
+		return user, errhandler.ErrInvalidReq
+	}
+	return user, nil
+}
+
+func (s *service) UpdateProfile(ctx context.Context, user models.User) error {
+	err := s.userRepo.UpdateProfile(ctx, user)
+	if err != nil {
+		return err
 	}
 	return nil
 }
