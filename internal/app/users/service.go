@@ -14,7 +14,7 @@ import (
 
 type Service interface {
 	RegisterUser(ctx context.Context, user models.NewUserRequest, role string) (int, error)
-	LoginUser(ctx context.Context, loginRequest models.LoginRequest) (string, error)
+	LoginUser(ctx context.Context, loginRequest models.LoginRequest) (string, models.User, error)
 	AddPreferences(ctx context.Context, preferences models.NewPreferenceRequest) error
 	ViewProfile(ctx context.Context) (models.User, error)
 	UpdateProfile(ctx context.Context, user models.User) error
@@ -51,23 +51,23 @@ func (s *service) RegisterUser(ctx context.Context, user models.NewUserRequest, 
 }
 
 // Allows user to Signin. First it checks whether user is already registered, if yes then it compares the provided password with users registered password. It generates a JWT token for users session and returns it.
-func (s *service) LoginUser(ctx context.Context, loginRequest models.LoginRequest) (string, error) {
+func (s *service) LoginUser(ctx context.Context, loginRequest models.LoginRequest) (string, models.User, error) {
 	user, err := s.userRepo.GetUserByEmail(ctx, loginRequest.Email)
 	if err != nil {
-		return "", errhandler.ErrUserMissing
+		return "", user, errhandler.ErrUserMissing
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
-		return "", errhandler.ErrUserInvalid
+		return "", user, errhandler.ErrUserInvalid
 	}
 
 	token, err := jwt.GenerateJWT(user.UserId, user.Role)
 	if err != nil {
-		return "", errhandler.ErrToken
+		return "", user, errhandler.ErrToken
 	}
 
-	return token, nil
+	return token, user, nil
 }
 
 // Adds user preferences. Calls db layer to add preferences.

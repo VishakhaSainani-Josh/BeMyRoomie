@@ -78,14 +78,14 @@ func LoginUser(userService Service) func(w http.ResponseWriter, r *http.Request)
 			return
 		}
 
-		token, err := userService.LoginUser(ctx, loginRequest)
+		token, user, err := userService.LoginUser(ctx, loginRequest)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
 			response.HandleResponse(w, statusCode, errMessage)
 			return
 		}
 
-		resp := models.LoginResponse{Token: token, Message: "Signed in successfully"}
+		resp := models.LoginResponse{Token: token, Message: "Signed in successfully", User: user}
 		response.HandleResponse(w, http.StatusOK, resp)
 	}
 }

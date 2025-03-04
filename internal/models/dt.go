@@ -8,6 +8,7 @@ type LoginRequest struct {
 type LoginResponse struct {
 	Token   string `json:"token"`
 	Message string `json:"message"`
+	User    User   `json:"user"`
 }
 
 type NewUserRequest struct {

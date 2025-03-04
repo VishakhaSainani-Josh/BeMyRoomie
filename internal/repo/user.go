@@ -19,7 +19,7 @@ const (
 	WHERE email = $1`
 	updateQuery = `UPDATE users SET tags=$1,city=$2 
 	where user_id=$3`
-	viewProfileQuery = `SELECT name, phone, email, gender,city,role,required_vacancy,tags FROM users 
+	viewProfileQuery = `SELECT user_id,name, phone, email, gender,city,role,required_vacancy,tags FROM users 
 	WHERE user_id = $1`
 	updateProfileQuery = `UPDATE users SET name=$2, phone=$3, email=$4, gender=$5, city=$6, role=$7, required_vacancy=$8,tags=$9 
 	WHERE user_id=$1`
@@ -99,7 +99,7 @@ func (r *userRepo) ViewProfile(ctx context.Context) (models.User, error) {
 		return user, errors.New("invalid or missing user ID in context")
 	}
 	var userTags []byte
-	err := r.DB.QueryRowContext(ctx, viewProfileQuery, userId).Scan(&user.Name, &user.Phone, &user.Email, &user.Gender, &user.City,
+	err := r.DB.QueryRowContext(ctx, viewProfileQuery, userId).Scan(&user.UserId, &user.Name, &user.Phone, &user.Email, &user.Gender, &user.City,
 		&user.Role, &user.RequiredVacancy, &userTags)
 	if err != nil {
 		return user, err

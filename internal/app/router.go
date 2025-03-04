@@ -10,7 +10,7 @@ import (
 	"github.com/VishakhaSainani-Josh/BeMyRoomie/internal/pkg/response"
 )
 
-func InitRouter(deps dependencies) *http.ServeMux {
+func InitRouter(deps dependencies) http.HandlerFunc {
 	router := http.NewServeMux()
 
 	//Public routes
@@ -36,5 +36,6 @@ func InitRouter(deps dependencies) *http.ServeMux {
 
 	router.HandleFunc("GET /interests/properties/{property_id}", middleware.Authentication(middleware.AuthorizeLister(interests.GetInterestedUsers(deps.interestService))))
 	router.HandleFunc("PATCH /interests/properties/{property_id}/{user_id}", middleware.Authentication(middleware.AuthorizeLister(interests.AcceptInterest(deps.interestService))))
-	return router
+	
+	return middleware.EnableCORS(router)
 }

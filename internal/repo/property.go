@@ -126,7 +126,7 @@ func (r *propertyRepo) UpdateProperty(ctx context.Context, property models.Prope
 		if err != nil && err != sql.ErrNoRows {
 			return err
 		}
-		if activeProperty.PropertyId != 0 {
+		if activeProperty.PropertyId != 0 && activeProperty.PropertyId != property.PropertyId {
 			return errhandler.ErrExistProperty
 		}
 	}
@@ -248,7 +248,7 @@ func (r *propertyRepo) GetUsersProperties(ctx context.Context) ([]models.Propert
 	if !ok {
 		return nil, errhandler.ErrInternalServer
 	}
-	
+
 	rows, err := r.DB.QueryContext(ctx, usersPropertiesQuery, listerId)
 	if err != nil {
 		return nil, err
