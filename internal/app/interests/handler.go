@@ -21,18 +21,18 @@ func ShowInterest(interestService Service) func(w http.ResponseWriter, r *http.R
 		propertyId, err := strconv.Atoi(propertyIdPath[2])
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		err = interestService.ShowInterest(ctx, propertyId)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
-		response.HandleResponse(w, http.StatusOK, "Interest shown successfully")
+		response.HandleResponse(w, http.StatusOK, "Interest shown successfully", nil)
 	}
 }
 
@@ -43,11 +43,11 @@ func GetInterestedProperties(interestService Service) func(e http.ResponseWriter
 		properties, err := interestService.GetInterestedProperties(ctx)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
-		
-		response.HandleResponse(w, http.StatusOK, properties)
+
+		response.HandleResponse(w, http.StatusOK, "fetched interested properties", properties)
 	}
 }
 
@@ -60,18 +60,18 @@ func RemoveInterest(interestService Service) func(w http.ResponseWriter, r *http
 		propertyId, err := strconv.Atoi(propertyIdPath[3])
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		err = interestService.RemoveInterest(ctx, propertyId)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
-		response.HandleResponse(w, http.StatusOK, "Interest deleted successfully")
+		response.HandleResponse(w, http.StatusOK, "Interest deleted successfully", nil)
 	}
 }
 
@@ -87,18 +87,18 @@ func GetInterestedUsers(interestService Service) func(w http.ResponseWriter, r *
 		propertyId, err := strconv.Atoi(propertyIdPath[3])
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		user, err := interestService.GetInterestedUsers(ctx, propertyId)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
-		response.HandleResponse(w, http.StatusOK, user)
+		response.HandleResponse(w, http.StatusOK, "fetched interested users", user)
 	}
 }
 
@@ -109,7 +109,7 @@ func AcceptInterest(interestService Service) func(w http.ResponseWriter, r *http
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
@@ -117,7 +117,7 @@ func AcceptInterest(interestService Service) func(w http.ResponseWriter, r *http
 		err = json.Unmarshal(body, &interestStatus)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
@@ -126,24 +126,24 @@ func AcceptInterest(interestService Service) func(w http.ResponseWriter, r *http
 		propertyId, err := strconv.Atoi(urlArr[3])
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		userId, err := strconv.Atoi(urlArr[4])
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		err = interestService.AcceptInterest(ctx, userId, propertyId, interestStatus.IsAccepted)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
-		response.HandleResponse(w, http.StatusOK, "Status Updated successfully")
+		response.HandleResponse(w, http.StatusOK, "Status Updated successfully", nil)
 	}
 }

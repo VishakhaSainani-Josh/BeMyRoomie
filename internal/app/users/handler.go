@@ -19,7 +19,7 @@ func UserRegister(userService Service) func(w http.ResponseWriter, r *http.Reque
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
@@ -27,14 +27,14 @@ func UserRegister(userService Service) func(w http.ResponseWriter, r *http.Reque
 		err = json.Unmarshal(body, &user)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		err = validations.ValidateRegisterUserStruct(user)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
@@ -43,12 +43,11 @@ func UserRegister(userService Service) func(w http.ResponseWriter, r *http.Reque
 		userId, err := userService.RegisterUser(ctx, user, role[1])
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
-		resp := models.UserResponse{UserId: userId, Message: "User Registered Successfully"}
-		response.HandleResponse(w, http.StatusOK, resp)
+		response.HandleResponse(w, http.StatusOK, "User Registered Successfully", userId)
 	}
 
 }
@@ -60,7 +59,7 @@ func LoginUser(userService Service) func(w http.ResponseWriter, r *http.Request)
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
@@ -68,25 +67,25 @@ func LoginUser(userService Service) func(w http.ResponseWriter, r *http.Request)
 		err = json.Unmarshal(body, &loginRequest)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 		err = validations.ValidateLoginRequestStruct(loginRequest)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		token, user, err := userService.LoginUser(ctx, loginRequest)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
-		resp := models.LoginResponse{Token: token, Message: "Signed in successfully", User: user}
-		response.HandleResponse(w, http.StatusOK, resp)
+		resp := models.LoginResponse{Token: token, User: user}
+		response.HandleResponse(w, http.StatusOK, "Signed in successfully", resp)
 	}
 }
 
@@ -97,7 +96,7 @@ func AddPreferences(userService Service) func(w http.ResponseWriter, r *http.Req
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
@@ -105,25 +104,25 @@ func AddPreferences(userService Service) func(w http.ResponseWriter, r *http.Req
 		err = json.Unmarshal(body, &preferences)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		err = validations.ValidatePreferenceStruct(preferences)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		err = userService.AddPreferences(ctx, preferences)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
-		response.HandleResponse(w, http.StatusOK, "Preferences Updated Successfully")
+		response.HandleResponse(w, http.StatusOK, "Preferences Updated Successfully", nil)
 	}
 }
 
@@ -133,11 +132,11 @@ func ViewProfile(userService Service) func(w http.ResponseWriter, r *http.Reques
 		user, err := userService.ViewProfile(ctx)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
-		response.HandleResponse(w, http.StatusOK, user)
+		response.HandleResponse(w, http.StatusOK, "fetch profile details", user)
 	}
 }
 
@@ -147,7 +146,7 @@ func UpdateProfile(userService Service) func(w http.ResponseWriter, r *http.Requ
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
@@ -155,24 +154,24 @@ func UpdateProfile(userService Service) func(w http.ResponseWriter, r *http.Requ
 		err = json.Unmarshal(body, &user)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		err = validations.ValidateUpdateProfileStruct(user)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		err = userService.UpdateProfile(ctx, user)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
-		response.HandleResponse(w, http.StatusOK, "Profile Details Updated Successfully")
+		response.HandleResponse(w, http.StatusOK, "Profile Details Updated Successfully", nil)
 	}
 }

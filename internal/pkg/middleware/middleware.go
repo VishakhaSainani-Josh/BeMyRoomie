@@ -16,14 +16,14 @@ func Authentication(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
-			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrAuth)
+			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrAuth.Error(), nil)
 			return
 		}
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		token, err := jwt.ParseJWT(tokenString)
 		if err != nil {
-			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrAuth)
+			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrAuth.Error(), nil)
 			return
 		}
 
@@ -43,12 +43,12 @@ func AuthorizeLister(next http.HandlerFunc) http.HandlerFunc {
 		ctx := r.Context()
 		role, ok := ctx.Value(constant.RoleKey).(string)
 		if !ok {
-			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrInternalServer)
+			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrInternalServer.Error(), nil)
 			return
 		}
 
 		if role != "lister" {
-			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrAuth)
+			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrAuth.Error(), nil)
 			return
 		}
 
@@ -61,12 +61,12 @@ func AuthorizeFinder(next http.HandlerFunc) http.HandlerFunc {
 		ctx := r.Context()
 		role, ok := ctx.Value(constant.RoleKey).(string)
 		if !ok {
-			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrInternalServer)
+			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrInternalServer.Error(), nil)
 			return
 		}
 
 		if role != "finder" {
-			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrAuth)
+			response.HandleResponse(w, http.StatusUnauthorized, errhandler.ErrAuth.Error(), nil)
 			return
 		}
 

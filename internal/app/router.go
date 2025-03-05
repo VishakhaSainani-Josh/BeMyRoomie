@@ -15,7 +15,7 @@ func InitRouter(deps dependencies) http.HandlerFunc {
 
 	//Public routes
 	router.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		response.HandleResponse(w, http.StatusOK, "Server working")
+		response.HandleResponse(w, http.StatusOK, "Server working", nil)
 	})
 	router.HandleFunc("POST /finder/signup", users.UserRegister(deps.userService))
 	router.HandleFunc("POST /lister/signup", users.UserRegister(deps.userService))
@@ -36,6 +36,6 @@ func InitRouter(deps dependencies) http.HandlerFunc {
 
 	router.HandleFunc("GET /interests/properties/{property_id}", middleware.Authentication(middleware.AuthorizeLister(interests.GetInterestedUsers(deps.interestService))))
 	router.HandleFunc("PATCH /interests/properties/{property_id}/{user_id}", middleware.Authentication(middleware.AuthorizeLister(interests.AcceptInterest(deps.interestService))))
-	
+
 	return middleware.EnableCORS(router)
 }

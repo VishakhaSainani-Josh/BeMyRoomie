@@ -61,7 +61,7 @@ func (r *interestRepo) ShowInterest(ctx context.Context, propertyId int) error {
 	var status bool = false
 	_, err = r.DB.ExecContext(ctx, showInterestQuery, userId, propertyId, status, time.Now(), time.Now())
 	if err != nil {
-		return err
+		return errhandler.ErrInterestExists
 	}
 
 	return nil

@@ -21,7 +21,7 @@ func RegisterProperty(propertyService Service) func(w http.ResponseWriter, r *ht
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
@@ -29,26 +29,25 @@ func RegisterProperty(propertyService Service) func(w http.ResponseWriter, r *ht
 		err = json.Unmarshal(body, &property)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		err = validations.ValidateRegisterPropertyStruct(property)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		propertyId, err := propertyService.RegisterProperty(ctx, property)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
-		resp := models.PropertyResponse{PropertyId: propertyId, Message: "Property Created Successfully"}
-		response.HandleResponse(w, http.StatusOK, resp)
+		response.HandleResponse(w, http.StatusOK, "Property Created Successfully", propertyId)
 	}
 }
 
@@ -59,7 +58,7 @@ func UpdateProperty(propertyService Service) func(w http.ResponseWriter, r *http
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
@@ -67,7 +66,7 @@ func UpdateProperty(propertyService Service) func(w http.ResponseWriter, r *http
 		err = json.Unmarshal(body, &property)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
@@ -76,25 +75,25 @@ func UpdateProperty(propertyService Service) func(w http.ResponseWriter, r *http
 		propertyId, err := strconv.Atoi(propertyIdPath[2])
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		err = validations.ValidateUpdatePropertyStruct(property)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		err = propertyService.UpdateProperty(ctx, property, propertyId)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
-		response.HandleResponse(w, http.StatusOK, "Property Details Updated Successfully")
+		response.HandleResponse(w, http.StatusOK, "Property Details Updated Successfully", nil)
 	}
 }
 
@@ -105,7 +104,7 @@ func GetAllProperties(propertyService Service) func(w http.ResponseWriter, r *ht
 		owner := r.URL.Query().Get("owner")
 		role, ok := ctx.Value(constant.RoleKey).(string)
 		if !ok {
-			response.HandleResponse(w, http.StatusInternalServerError, errhandler.ErrInternalServer.Error())
+			response.HandleResponse(w, http.StatusInternalServerError, errhandler.ErrInternalServer.Error(), nil)
 			return
 		}
 
@@ -121,11 +120,11 @@ func GetAllProperties(propertyService Service) func(w http.ResponseWriter, r *ht
 
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
-		response.HandleResponse(w, http.StatusOK, properties)
+		response.HandleResponse(w, http.StatusOK, "fetched all properties", properties)
 	}
 }
 
@@ -138,17 +137,17 @@ func GetParticularProperties(propertyService Service) func(w http.ResponseWriter
 		propertyId, err := strconv.Atoi(propertyIdPath[2])
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
 		properties, err := propertyService.GetParticularProperty(ctx, propertyId)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
-			response.HandleResponse(w, statusCode, errMessage)
+			response.HandleResponse(w, statusCode, errMessage, nil)
 			return
 		}
 
-		response.HandleResponse(w, http.StatusOK, properties)
+		response.HandleResponse(w, http.StatusOK, "fetched particular properties", properties)
 	}
 }

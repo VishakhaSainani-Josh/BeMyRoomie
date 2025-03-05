@@ -24,6 +24,7 @@ var (
 	ErrInvalidGender   = errors.New("gender should be Male or Female")
 	ErrInavlidVacancy  = errors.New("required vacancy should be greater than 0")
 	ErrInvalidTitle    = errors.New("title length should be atleast 2")
+	ErrInterestExists  = errors.New("interest already shown")
 )
 
 func MapError(err error) (int, string) {
@@ -64,6 +65,8 @@ func MapError(err error) (int, string) {
 		return http.StatusUnprocessableEntity, ErrInavlidVacancy.Error()
 	case errors.Is(err, ErrInvalidTitle):
 		return http.StatusUnprocessableEntity, ErrInvalidTitle.Error()
+	case errors.Is(err, ErrInterestExists):
+		return http.StatusBadRequest, ErrInterestExists.Error()
 
 	default:
 		return http.StatusInternalServerError, "default internal server error"
