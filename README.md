@@ -1,4 +1,5 @@
-# BeMyRoomie - Find Your Ideal Roommate & Rental [Doc](https://docs.google.com/document/d/1XBthZ5AVzIui26VsDh8WpWbkTg9RDjPf2L5AS9QJ6OM/edit?tab=t.0)
+# BeMyRoomie - Find Your Ideal Roommate & Rental 
+[Doc](https://docs.google.com/document/d/1XBthZ5AVzIui26VsDh8WpWbkTg9RDjPf2L5AS9QJ6OM/edit?tab=t.0)
 
 BeMyRoomie is a web-based platform that simplifies the process of finding a roommate or rental accommodation. It provides users with an easy way to list, search, and filter available flats, rooms, or roommates based on preferences and requirements.
 
