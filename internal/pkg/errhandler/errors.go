@@ -14,6 +14,9 @@ var (
 	ErrUserMissing    = errors.New("user doesn't exist")
 	ErrHash           = errors.New("password hashing error")
 	ErrToken          = errors.New("could not generate token")
+	ErrAuth           = errors.New("unauthorized access")
+	ErrExistProperty  = errors.New("already vacant property for user exists")
+	ErrPropertyAccess = errors.New("unauthorized to update property")
 )
 
 func MapError(err error) (int, string) {
@@ -32,9 +35,15 @@ func MapError(err error) (int, string) {
 		return http.StatusInternalServerError, ErrHash.Error()
 	case errors.Is(err, ErrToken):
 		return http.StatusInternalServerError, ErrToken.Error()
+	case errors.Is(err, ErrExistProperty):
+		return http.StatusBadRequest, ErrExistProperty.Error()
 	case errors.Is(err, ErrInternalServer):
 		return http.StatusInternalServerError, ErrInternalServer.Error()
+	case errors.Is(err, ErrPropertyAccess):
+		return http.StatusBadRequest, ErrPropertyAccess.Error()
+	case errors.Is(err, ErrAuth):
+		return http.StatusUnauthorized, ErrAuth.Error()
 	default:
-		return http.StatusInternalServerError, "internal server error"
+		return http.StatusInternalServerError, "default internal server error"
 	}
 }

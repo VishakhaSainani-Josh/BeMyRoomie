@@ -79,6 +79,7 @@ func LoginUser(userService Service) func(w http.ResponseWriter, r *http.Request)
 //Reads user Preferences and makes request to add preference service
 func AddPreferences(userService Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx:=r.Context()
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
@@ -94,7 +95,7 @@ func AddPreferences(userService Service) func(w http.ResponseWriter, r *http.Req
 			return
 		}
 
-		err = userService.AddPreferences(r.Context(), preferences)
+		err = userService.AddPreferences(ctx, preferences)
 		if err != nil {
 			statusCode, errMessage := errhandler.MapError(err)
 			response.HandleResponse(w, statusCode, errMessage)
