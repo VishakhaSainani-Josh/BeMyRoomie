@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS interests;
-DROP TABLE IF EXISTS listings;
+DROP TABLE IF EXISTS properties;
 DROP TABLE IF EXISTS users;
 
 
